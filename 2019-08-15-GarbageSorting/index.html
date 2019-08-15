@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../ext-3.3.0-all/resources/css/ext-all.css">
+    <script src="../ext-3.3.0-all/adapter/ext/ext-base.js"></script>
+    <script src="../ext-3.3.0-all/ext-all.js"></script>
+</head>
+
+
+<script type="text/javascript">
+
+    Ext.onReady(function () {
+
+        var Q1_fieldset = new Ext.form.FieldSet({
+            title: 'Question-1',
+            width: 600,
+            items: [{
+                xtype: 'radiogroup',
+                id: 'Q1',
+                items: [{
+                    checked: false,
+                    defaultType: 'radio',
+                    items: [
+                        {xtype: 'label', html: '<b>番茄酱属于以下哪种垃圾？（单选）</b>'},
+                        {boxLabel: 'A.湿垃圾', name: 'Q1', value: 'A'},
+                        {boxLabel: 'B.干垃圾', name: 'Q1', value: 'B'},
+                        {boxLabel: 'C.有害垃圾', name: 'Q1', value: 'C'},
+                        {boxLabel: 'D.可回收物', name: 'Q1', value: 'D'}
+                    ]
+                }]
+            }]
+        });
+
+
+        var Q50_fieldset = new Ext.form.FieldSet({
+            title: 'Question-50',
+            width: 500,
+            items: [{
+                xtype: 'checkboxgroup',
+                id: 'Q50',
+                items: [{
+                    border: false,
+                    defaultType: 'checkbox',
+                    items: [
+                        {xtype: 'label', html: '<b>王大叔出门遛狗后，哪些是正确处理狗粑粑的方法？（多选）</b>'},
+                        {boxLabel: 'A.把粑粑用废报纸包好带回家冲掉', name: 'A'},
+                        {boxLabel: 'B.受污染的报纸按有害垃圾处理', name: 'B'},
+                        {boxLabel: 'C.没受污染的报纸按可回垃圾处理', name: 'C'},
+                        {boxLabel: 'D.受污染的报纸浸水后当湿垃圾处理', name: 'D'}
+                    ]
+                }]
+            }]
+        });
+
+
+
+        var Questions_fieldset = new Ext.form.FieldSet({
+            title: 'Your-Answer',
+            width: 500,
+            items: [
+                {xtype: 'label', html: '<b>Q1:番茄酱属于以下哪种垃圾？（单选）</b><br>'},
+                {xtype: 'label', id: 'q1-answer', text: '未答'},
+                {xtype: 'label', html: '<br><b>Q2:王大叔出门遛狗后，哪些是正确处理狗粑粑的方法？（多选）</b><br>'},
+                {xtype: 'label', id: 'q50-answer', text: '未答'},
+            ],
+            buttons: [
+                {
+                    text: 'Submit',
+                    handler: function () {
+                        Ext.MessageBox.alert("Message", "Congratulations");
+                        Ext.getCmp('move-prev').setDisabled(true);
+                    }
+                }
+            ]
+        })
+
+
+        var navHandler = function (direction) {
+            var wizard = Ext.getCmp('wizard').layout;
+            var prev = Ext.getCmp('move-prev');
+            var next = Ext.getCmp('move-next');
+            var activeId = wizard.activeItem.id;
+
+            var Q1_Answer = Ext.getCmp('Q1').getValue();
+            var Q50_Answer = Ext.getCmp('Q50').getValue();
+
+
+            if (activeId == 'card-0') {
+                if (direction == 1 && Q1_Answer != null) {
+                    Ext.getCmp('q1-answer').setText(Q1_Answer.value);
+                    wizard.setActiveItem(1);
+                    prev.setDisabled(false);
+                }
+            } else if (activeId == 'card-1') {
+                if (direction == -1) {
+                    wizard.setActiveItem(0);
+                    prev.setDisabled(true);
+                } else {
+                    if (Q50_Answer.length != 0) {
+
+                        var result = "";
+                        for (var i = 0; i < Q50_Answer.length; i++) {
+                            result += Q50_Answer[i].name + " ";
+                        }
+                        Ext.getCmp('q50-answer').setText(result);
+
+                        wizard.setActiveItem(2);
+                        next.setDisabled(true);
+                    }
+                }
+            } else if (activeId == 'card-2') {
+                if (direction == -1) {
+                    wizard.setActiveItem(1);
+                    next.setDisabled(false);
+                }
+            }
+        };
+
+        var card = new Ext.Panel({
+            id: 'wizard',
+            title: 'Questionnaire',
+            layout: 'card',
+            renderTo: 'test',
+            activeItem: 0,
+            bodyStyle: 'padding:15px',
+            width:700,
+            defaults: {
+                border: false
+            },
+            bbar: [
+                {
+                    id: 'move-prev',
+                    text: 'Back',
+                    handler: navHandler.createDelegate(this, [-1]),
+                    disabled: true
+                },
+                '->',
+                {
+                    id: 'move-next',
+                    text: 'Next',
+                    handler: navHandler.createDelegate(this, [1])
+                }
+            ],
+            items: [{
+                id: 'card-0',
+                items: Q1_fieldset
+
+            }, {
+                id: 'card-1',
+                items: Q50_fieldset
+            }, {
+                id: 'card-2',
+                items: Questions_fieldset
+            }]
+        });
+
+
+    })
+
+
+</script>
+
+<body>
+
+<div id="test"></div>
+
+</body>
+
+</html>
